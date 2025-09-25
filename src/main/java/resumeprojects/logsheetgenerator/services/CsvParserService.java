@@ -1,8 +1,11 @@
 package resumeprojects.logsheetgenerator.services;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import resumeprojects.logsheetgenerator.Strategies.LogReportStrategy;
 import resumeprojects.logsheetgenerator.models.*;
+import resumeprojects.logsheetgenerator.util.Util;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -16,12 +19,18 @@ import java.util.Map;
 @Service
 public class CsvParserService {
 
-    public Map<Integer, LogSheet> parseCsv(MultipartFile file, int lineNumber) throws IOException {
+    @Autowired
+    LogReportStrategy logReportStrategy;
+
+    public CsvParserService(LogReportStrategy logReportStrategy) {
+        this.logReportStrategy = logReportStrategy;
+    }
+
+    public Map<Integer, LogSheet> parseCsv(MultipartFile sl, MultipartFile file, int bibNumber) throws IOException {
         System.out.println("Parsing CSV... inside service class.....");
         Map<Integer, String> map = new HashMap<>();
 
-        int bibNumer = -1;
-        int fp = lineNumber;
+        int fp = 0;
         List<ShotRecord> shotRecords = new ArrayList<>();
 
         try(BufferedReader reader = new BufferedReader(new InputStreamReader(file.getInputStream()))){
@@ -41,11 +50,7 @@ public class CsvParserService {
                     continue; // or throw exception
                 }
 
-                if(Integer.parseInt(part[3]) == fp){
-
-                    if(bibNumer == -1){
-                        bibNumer = Integer.parseInt(part[0]);
-                    }
+                if(Integer.parseInt(part[0]) == bibNumber){
 
                     ShotRecord shotRecord = new ShotRecord();
                     shotRecord.setShotNumber(i);
@@ -57,6 +62,7 @@ public class CsvParserService {
                     }
                     shotRecord.setIsInnerTen(ii);
                     shotRecord.setTimestamp(part[6]);
+                    shotRecord.setOvertime(Double.parseDouble(part[11]));
 
                     ShotType shotType = ShotType.SIGHTER;
 
@@ -71,14 +77,16 @@ public class CsvParserService {
                 }
             }
         }
-        LogSheet logSheet = new LogSheet();
-        logSheet.setTargetNumber(lineNumber);
-        logSheet.setBibNumber(bibNumer);
-        logSheet.setShotRecords(shotRecords);
+
+        LogSheet logSheet = logReportStrategy.generateLogSheet(shotRecords);
+
+        LogSheetMetaData lsMetaData = Util.setMetaToLogSheet(sl, bibNumber);
+
+        logSheet.setMetaData(lsMetaData);
 
         Map<Integer, LogSheet> logSheetMap = new HashMap<>();
 
-        logSheetMap.put(fp, logSheet);
+        logSheetMap.put(bibNumber, logSheet);
 
         return logSheetMap;
     }

@@ -14,6 +14,7 @@ public class ShotRecord {
     Coordinates coordinates;
     String timestamp;
     IsInnerTen isInnerTen;
+    double overtime;
 
     public int getShotNumber() {
         return shotNumber;
@@ -61,5 +62,13 @@ public class ShotRecord {
 
     public void setIsInnerTen(IsInnerTen isInnerTen) {
         this.isInnerTen = isInnerTen;
+    }
+
+    public double getOvertime() {
+        return overtime;
+    }
+
+    public void setOvertime(double overtime) {
+        this.overtime = overtime;
     }
 }

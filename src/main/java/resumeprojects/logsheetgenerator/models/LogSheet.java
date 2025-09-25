@@ -5,39 +5,51 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Data
 @Setter
 @Getter
 public class LogSheet {
-    int targetNumber;
 
-    int bibNumber;
+    LogSheetMetaData metaData;
 
-    List<ShotRecord> shotRecords = new ArrayList<ShotRecord>();
+    List<Series> series;
 
-    public int getTargetNumber() {
-        return targetNumber;
+    Date timestamp;
+
+    double total;
+
+    public List<Series> getSeries() {
+        return series;
     }
 
-    public void setTargetNumber(int targetNumber) {
-        this.targetNumber = targetNumber;
+    public void setSeries(List<Series> series) {
+        this.series = series;
     }
 
-    public int getBibNumber() {
-        return bibNumber;
+    public double getTotal() {
+        return total;
     }
 
-    public void setBibNumber(int bibNumber) {
-        this.bibNumber = bibNumber;
+    public void setTotal(double total) {
+        this.total = total;
     }
 
-    public List<ShotRecord> getShotRecords() {
-        return shotRecords;
+    public Date getTimestamp() {
+        return timestamp;
     }
 
-    public void setShotRecords(List<ShotRecord> shotRecords) {
-        this.shotRecords = shotRecords;
+    public void setTimestamp(Date timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public LogSheetMetaData getMetaData() {
+        return metaData;
+    }
+
+    public void setMetaData(LogSheetMetaData metaData) {
+        this.metaData = metaData;
     }
 }
